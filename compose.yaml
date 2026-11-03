@@ -1,0 +1,35 @@
+services:
+  api:
+    build: .
+    ports:
+      - "${DOGJOB_PORT:-8000}:${DOGJOB_PORT:-8000}"
+    environment:
+      DOGJOB_HOST: 0.0.0.0
+      DOGJOB_PORT: ${DOGJOB_PORT:-8000}
+      DOGJOB_API_KEY: ${DOGJOB_API_KEY}
+      DOGJOB_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      DOGJOB_RESEND_API_KEY: ${DOGJOB_RESEND_API_KEY}
+      DOGJOB_REMINDER_RECIPIENT: ${DOGJOB_REMINDER_RECIPIENT}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:18
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_PASSWORD}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  postgres_data:

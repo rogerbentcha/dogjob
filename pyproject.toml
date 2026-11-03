@@ -1,0 +1,44 @@
+[project]
+name = "dogjob"
+version = "0.1.0"
+description = "Source unique de vérité de ma recherche d'emploi : candidatures, statuts et relances."
+readme = "README.md"
+authors = [
+    { name = "B.ROGER", email = "remirjunior1999@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi[standard]>=0.162.0",
+    "pydantic-settings>=2.16.2",
+]
+
+[project.scripts]
+dogjob = "dogjob:main"
+
+[build-system]
+requires = ["uv_build>=0.13.6,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+
+[tool.fastapi]
+entrypoint = "dogjob.app:app"
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "ruff>=0.17.3",
+]
