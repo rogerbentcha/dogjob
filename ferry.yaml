@@ -1,0 +1,32 @@
+databases:
+  - name: dogjob-db
+    postgresMajorVersion: "16" # non modifiable après création
+    databaseName: dogjob
+    user: dogjob
+    plan: basic-256mb
+
+services:
+  - type: web
+    name: dogjob-api
+    runtime: docker
+    repo: https://github.com/rogerbentcha/dogjob
+    branch: main
+    dockerfilePath: Dockerfile
+    port: 10000
+    healthCheckPath: /health
+    autoDeploy: true # déploiement à chaque push sur main (GitHub connecté dans le dashboard)
+    envVars:
+      - key: DOGJOB_HOST
+        value: 0.0.0.0
+      - key: DOGJOB_PORT
+        value: "10000"
+      - key: DOGJOB_DATABASE_URL
+        fromDatabase:
+          name: dogjob-db
+          property: connectionString
+      - key: DOGJOB_API_KEY
+        generateValue: true
+      - key: DOGJOB_RESEND_API_KEY
+        value: "demo"
+      - key: DOGJOB_REMINDER_RECIPIENT
+        value: "demo@gmail.com"

@@ -11,7 +11,11 @@ class Base(DeclarativeBase):
 env = get_settings()
 
 # database engine
-engine = create_engine(env.database_url.get_secret_value())
+# Ferry fournit une URL "postgresql://" : on force le driver psycopg (v3).
+_database_url = env.database_url.get_secret_value().replace(
+    "postgresql://", "postgresql+psycopg://", 1
+)
+engine = create_engine(_database_url)
 
 def get_session():
     with Session(engine) as session:
