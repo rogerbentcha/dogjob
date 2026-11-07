@@ -16,6 +16,18 @@ uv run fastapi dev     # http://127.0.0.1:8000/health et /docs
 
 Toute la configuration passe par des variables d'environnement préfixées `DOGJOB_` (voir `.env.example`). Aucun secret n'est versionné.
 
+## Migrations (Alembic)
+
+Le schéma de la base est versionné dans `migrations/versions/`. Après une modification du modèle (`src/dogjob/domain/`) :
+
+```bash
+uv run alembic revision --autogenerate -m "description du changement"   # puis relire le fichier généré
+uv run alembic upgrade head                                            # appliquer en local
+uv run alembic check                                                   # vérifier que modèle et base concordent
+```
+
+En production, l'image Docker exécute `alembic upgrade head` avant de démarrer l'API : un déploiement applique donc ses migrations tout seul. Si une migration échoue, le conteneur s'arrête et l'API ne démarre pas.
+
 ## Qualité
 
 ```bash
